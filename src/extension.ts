@@ -15498,14 +15498,50 @@ class SidebarChatProvider implements vscode.WebviewViewProvider {
 
             // 스트리밍 완료 알림 잠시 보류 (연속된 답변을 같은 상자에 이어서 출력하기 위함)
             
-            // 4.5 자율 열람 (Second Brain 및 웹 검색): AI가 <read_brain> 또는 <read_url>을 사용했는지 확인
-            const brainReads = [...aiMessage.matchAll(/<read_brain>([\s\S]*?)<\/read_brain>/g)];
-            const urlReads = [...aiMessage.matchAll(/<read_url>([\s\S]*?)<\/read_url>/gi)];
+            // 4.5 자율 열람 (Second Brain 및 웹 검색): AI가 <read_brain>, <search_brain>, <read_url>을 사용했는지 확인
+            const brainReads  = [...aiMessage.matchAll(/<read_brain>([\s\S]*?)<\/read_brain>/g)];
+            const brainSearch = [...aiMessage.matchAll(/<search_brain>([\s\S]*?)<\/search_brain>/gi)];
+            const urlReads    = [...aiMessage.matchAll(/<read_url>([\s\S]*?)<\/read_url>/gi)];
 
-            if (brainReads.length > 0 || urlReads.length > 0) {
+            if (brainReads.length > 0 || brainSearch.length > 0 || urlReads.length > 0) {
                 let fetchedContent = '';
                 let uiFeedbackStr = '';
-                
+
+                // v2.89.91 — <search_brain>query</search_brain>: RAG 의미 검색
+                // rag_index.py로 생성된 벡터 인덱스에서 유사 청크를 검색.
+                // 인덱스 없으면 기존 파일 목차 열람으로 자동 폴백.
+                for (const match of brainSearch) {
+                    const query = match[1].trim();
+                    const brainDir = _getBrainDir();
+                    const indexFile = path.join(brainDir, '.rag-index', 'index.json');
+                    const ragScript = path.join(__dirname, '..', 'assets', 'tool-seeds', 'brain', 'rag_search.py');
+
+                    this._view.webview.postMessage({ type: 'streamChunk', value: `\n\n> 🔍 **[RAG 검색]** "${query.slice(0, 60)}"...\n\n` });
+
+                    if (fs.existsSync(indexFile) && fs.existsSync(ragScript)) {
+                        try {
+                            const ragResult = spawnSync(
+                                _pythonCmd(), [ragScript, query, '--no-llm', '--top', '5'],
+                                { encoding: 'utf-8', timeout: 30000,
+                                  env: { ...process.env, PYTHONUTF8: '1' } }
+                            );
+                            const ragOut = (ragResult.stdout || '').trim();
+                            if (ragOut) {
+                                fetchedContent += `\n\n[RAG SEARCH: "${query}"]\n${ragOut}\n`;
+                                uiFeedbackStr += `\n\n> 🔍 **[RAG 완료]** Brain에서 관련 문서 검색 완료.\n\n`;
+                            } else {
+                                fetchedContent += `\n\n[RAG SEARCH: "${query}"] 관련 청크를 찾지 못했습니다.\n`;
+                            }
+                        } catch (e: any) {
+                            fetchedContent += `\n\n[RAG SEARCH: "${query}"] 검색 오류: ${e.message}\n`;
+                        }
+                    } else {
+                        // 폴백: 파일명 기반 브레인 읽기
+                        fetchedContent += `\n\n[RAG INDEX 없음 — 파일 검색 폴백: "${query}"]\n` + this._readBrainFile(query);
+                        uiFeedbackStr += `\n\n> ⚠️ RAG 인덱스가 없습니다. rag_index.py를 먼저 실행하세요.\n\n`;
+                    }
+                }
+
                 // Brain 읽기 처리
                 for (const match of brainReads) {
                     const requestedFile = match[1].trim();
@@ -15535,6 +15571,7 @@ class SidebarChatProvider implements vscode.WebviewViewProvider {
                 }
 
                 const cleanedResponse = aiMessage.replace(/<read_brain>[\s\S]*?<\/read_brain>/g, '')
+                                                 .replace(/<search_brain>[\s\S]*?<\/search_brain>/gi, '')
                                                  .replace(/<read_url>[\s\S]*?<\/read_url>/gi, '').trim();
                 
                 if (brainReads.length > 0) {

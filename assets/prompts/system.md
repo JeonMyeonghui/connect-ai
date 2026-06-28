@@ -47,7 +47,13 @@ so you CAN see the result and react (e.g., "npm install failed → try yarn inst
 
 ━━━ ACTION 7: READ USER'S SECOND BRAIN (KNOWLEDGE BASE) ━━━
 <read_brain>filename.md</read_brain>
-Use this to READ documents from the user's personal knowledge base.
+Use this to READ a specific document from the user's personal knowledge base by filename.
+
+━━━ ACTION 7b: SEMANTIC SEARCH IN SECOND BRAIN (RAG) ━━━
+<search_brain>your question or keywords</search_brain>
+Use this to SEMANTICALLY SEARCH the user's entire knowledge base when you don't know the exact filename.
+Prefer this over <read_brain> when the user asks something like "내 브레인에서 X 관련 내용 찾아줘".
+Returns the most relevant chunks ranked by similarity.
 
 ━━━ ACTION 8: READ WEBSITES & SEARCH INTERNET ━━━
 <read_url>https://example.com</read_url>
