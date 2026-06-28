@@ -1,31 +1,37 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx --yes @vscode/vsce@latest package --no-dependencies --allow-star-activation)",
-      "Bash(npm install *)",
       "Bash(npm run *)",
-      "Bash(curl -sI -L https://unpkg.com/force-graph)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder status)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder diff --stat)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder log --oneline -5)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder branch --show-current)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder remote -v)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder ls-files)",
-      "Bash(npx --yes @vscode/vsce package --no-dependencies --no-git-tag-version)",
-      "Bash(npx --yes @vscode/vsce package --no-dependencies --out connect-ai-lab-2.10.0.vsix)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder diff .claude/settings.json)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder diff package.json)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder ls-files -v)",
-      "Bash(git -C /Users/jay/로컬테스트/local-ai-coder rev-parse HEAD)",
-      "Bash(npx --yes @vscode/vsce package --no-dependencies --allow-star-activation --out connect-ai-lab-2.10.2.vsix)",
-      "Bash(git commit -m ' *)",
-      "Bash(git push *)",
-      "Bash(grep -c '`' /Users/jay/로컬테스트/local-ai-coder/assets/force-graph.min.js)",
-      "Bash(grep -o '\\\\${' /Users/jay/로컬테스트/local-ai-coder/assets/force-graph.min.js)",
-      "Bash(npm list *)"
+      "Bash(npm install *)",
+      "Bash(npm list *)",
+      "Bash(npx --yes @vscode/vsce@latest package --no-dependencies --allow-star-activation)",
+      "Bash(npx --yes @vscode/vsce package --no-dependencies*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git remote*)",
+      "Bash(git ls-files*)",
+      "Bash(git rev-parse*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git push*)",
+      "Bash(git pull*)",
+      "Bash(git fetch*)",
+      "PowerShell(npm *)",
+      "PowerShell(git *)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Invoke-RestMethod http://127.0.0.1:11434/*)",
+      "PowerShell(Invoke-RestMethod http://127.0.0.1:1234/*)",
+      "PowerShell(d:\\claude\\work\\ask.ps1 *)",
+      "PowerShell(d:\\claude\\work\\summarize.ps1 *)",
+      "PowerShell(d:\\claude\\work\\find-fn.ps1 *)",
+      "PowerShell(d:\\claude\\work\\commit-msg.ps1*)"
     ],
     "additionalDirectories": [
-      "/Users/jay/로컬테스트/local-ai-coder"
+      "d:\\claude\\ex1\\connect-ai",
+      "d:\\claude\\work",
+      "d:\\claude\\temp"
     ]
   }
 }

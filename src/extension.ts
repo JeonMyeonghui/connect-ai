@@ -822,6 +822,26 @@ function _autoOrchestrateModelMap(installed: { id: string; backend: string }[]):
       }
     }
   }
+  /* v2.89.89 — 도메인 SFT 모델 우선 할당.
+     일반 tier 기반 할당 완료 후, 도메인에 특화된 fine-tuned 모델이 설치돼 있으면
+     해당 에이전트에 덮어씀. 사용자가 직접 에이전트별 모델을 고른 경우엔 건드리지 않음.
+     (writeAgentModelMap 저장 후 user override는 UI에서 별도 관리되므로 여기선 auto값만 세팅) */
+  const allIds = installed.map(m => m.id);
+  const SFT_DOMAIN_MAP: { pattern: RegExp; agents: string[] }[] = [
+    /* Researcher: wikiagent SFT — 지식 검색·분석에 특화 */
+    { pattern: /wikiagent.*v3/i,      agents: ['researcher'] },
+    { pattern: /wikiagent/i,          agents: ['researcher'] },
+    /* Business: locallegal SFT — 법률·계약 검토에 특화 */
+    { pattern: /locallegal/i,         agents: ['business'] },
+  ];
+  for (const { pattern, agents } of SFT_DOMAIN_MAP) {
+    const matched = allIds.find(id => pattern.test(id));
+    if (matched) {
+      for (const agentId of agents) {
+        map[agentId] = matched;
+      }
+    }
+  }
   return map;
 }
 

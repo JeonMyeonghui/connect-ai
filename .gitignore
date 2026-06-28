@@ -6,3 +6,8 @@ preview.html
 .DS_Store
 releases/
 .env
+_temp/
+_draft/
+*.draft.*
+*.test.ts
+scratch.*

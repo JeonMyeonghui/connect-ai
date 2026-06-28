@@ -1,0 +1,7 @@
+{
+  "QUERY": "",
+  "MAX_RESULTS": 10,
+  "OLLAMA_URL": "http://127.0.0.1:11434",
+  "MODEL": "",
+  "LANGUAGE": "Korean"
+}
